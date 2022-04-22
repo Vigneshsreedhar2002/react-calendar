@@ -5,14 +5,11 @@ import {
   setDaysObj,
   deleteEventObj,
   setEventsObj,
-
 } from "./actionCreatorsObj";
 
 import uuid from "uuid";
 
-
 export const getCurrentDateDispatch = (year, month, date) => (dispatch) => {
-
   const currDayOfMonth = date;
   const currMonth = month;
   const currYear = year;
@@ -20,13 +17,11 @@ export const getCurrentDateDispatch = (year, month, date) => (dispatch) => {
   // Find the starting day of the month
   let startingDay = new Date(currYear, currMonth - 1, 1).getDay();
 
-  dispatch(getCurrentDateObj(currYear, currMonth, currDayOfMonth))
+  dispatch(getCurrentDateObj(currYear, currMonth, currDayOfMonth));
   dispatch(setDaysDispatch(startingDay, currMonth, currYear));
 };
 
-
 export const setDaysDispatch = (sd, m, y) => (dispatch) => {
-
   let emptyDaysTop = sd === 0 ? 6 : sd - 1;
   let emptyDaysBottom = 0;
   let totalDaysOfMonth = 0;
@@ -57,7 +52,7 @@ export const setDaysDispatch = (sd, m, y) => (dispatch) => {
     let dayObj = {
       visible: false,
       dayOfMonth: 0,
-      date: m < 10 ? `${y}-0${m}-${i}` : `${y}-${m}-${i}`
+      date: m < 10 ? `${y}-0${m}-${i}` : `${y}-${m}-${i}`,
     };
     daysArr.push(dayObj);
   }
@@ -77,7 +72,7 @@ export const setDaysDispatch = (sd, m, y) => (dispatch) => {
     let dayObj = {
       visible: true,
       dayOfMonth: i,
-      date: `${y}-${newM}-${newI}`
+      date: `${y}-${newM}-${newI}`,
     };
     daysArr.push(dayObj);
   }
@@ -85,24 +80,24 @@ export const setDaysDispatch = (sd, m, y) => (dispatch) => {
     let dayObj = {
       visible: false,
       dayOfMonth: 0,
-      date: m < 10 ? `${y}-0${m}-${i}` : `${y}-${m}-${i}`
+      date: m < 10 ? `${y}-0${m}-${i}` : `${y}-${m}-${i}`,
     };
     daysArr.push(dayObj);
   }
 
-  dispatch(setDaysObj(daysArr))
+  dispatch(setDaysObj(daysArr));
 };
 
 // Get prev month
 export const prevMonthDispatch = (state) => (dispatch) => {
   if (state.currentMonth === 1) {
     dispatch(getCurrentDateDispatch(state.currentYear - 1, 12, 1));
-    dispatch(prevMonthObj(12, state.currentYear - 1))
-
+    dispatch(prevMonthObj(12, state.currentYear - 1));
   } else {
-    dispatch(getCurrentDateDispatch(state.currentYear, state.currentMonth - 1, 1));
-    dispatch(prevMonthObj(state.currentMonth - 1, state.currentYear))
-
+    dispatch(
+      getCurrentDateDispatch(state.currentYear, state.currentMonth - 1, 1)
+    );
+    dispatch(prevMonthObj(state.currentMonth - 1, state.currentYear));
   }
 };
 
@@ -110,66 +105,63 @@ export const prevMonthDispatch = (state) => (dispatch) => {
 export const nextMonthDispatch = (state) => (dispatch) => {
   if (state.currentMonth === 12) {
     dispatch(getCurrentDateDispatch(state.currentYear + 1, 1, 1));
-    dispatch(nextMonthObj(1, state.currentYear + 1))
+    dispatch(nextMonthObj(1, state.currentYear + 1));
   } else {
-    dispatch(getCurrentDateDispatch(state.currentYear, state.currentMonth + 1, 1));
+    dispatch(
+      getCurrentDateDispatch(state.currentYear, state.currentMonth + 1, 1)
+    );
 
-    dispatch(nextMonthObj(state.currentMonth + 1, state.currentYear))
-
+    dispatch(nextMonthObj(state.currentMonth + 1, state.currentYear));
   }
 };
 
-
 // Add event
-export const addEventDispatch = (id, eventName, date, time, participants, description, state) => (dispatch) => {
-
-  console.log(localStorage.getItem("events"))
-  //const localStorageElement = JSON.parse(localStorage.getItem("events")).find(el => el.id === id);
-
-  
-
-  let events;
-
-  //if (localStorageElement) {
-    if (localStorage.getItem("events")) {
+export const addEventDispatch =
+  (id, eventName, date, time, description, state) => (dispatch) => {
+    console.log(localStorage.getItem("events"));
     //const localStorageElement = JSON.parse(localStorage.getItem("events")).find(el => el.id === id);
-    const changeEvent = {
-      id: id,
-      date: date,
-      time: time,
-      participants: participants,
-      eventName: eventName,
-      description: description
-    }
-    const localStorageArr = JSON.parse(localStorage.getItem("events")).filter(e => e.id !== id);
-    events = [...localStorageArr, changeEvent]
-  } else {
-    let newEvent = {
-      id: uuid.v4(),
-      date: date,
-      time: time,
-      participants: participants,
-      eventName: eventName,
-      description: description
+
+    let events;
+
+    //if (localStorageElement) {
+    if (localStorage.getItem("events")) {
+      //const localStorageElement = JSON.parse(localStorage.getItem("events")).find(el => el.id === id);
+      const changeEvent = {
+        id: id,
+        date: date,
+        time: time,
+        eventName: eventName,
+        description: description,
+      };
+      const localStorageArr = JSON.parse(localStorage.getItem("events")).filter(
+        (e) => e.id !== id
+      );
+      events = [...localStorageArr, changeEvent];
+    } else {
+      let newEvent = {
+        id: uuid.v4(),
+        date: date,
+        time: time,
+        eventName: eventName,
+        description: description,
+      };
+
+      events = [...state.events, newEvent];
     }
 
-    events = [...state.events, newEvent]
+    addEventsToLS(events);
+    dispatch(getEventsFromLS());
 
+    getCurrentDateDispatch(state.currentYear, state.currentMonth, 1);
   };
-
-  addEventsToLS(events);
-  dispatch(getEventsFromLS());
-
-  getCurrentDateDispatch(state.currentYear, state.currentMonth, 1);
-};
 
 // Delete event
 export const deleteEventDispatch = (state, id) => (dispatch) => {
-  let events = state.events.filter(e => e.id !== id);
+  let events = state.events.filter((e) => e.id !== id);
   addEventsToLS(events);
   getEventsFromLS();
 
-  dispatch(deleteEventObj(id))
+  dispatch(deleteEventObj(id));
 };
 
 // Get events from localstorage
@@ -183,6 +175,6 @@ export const getEventsFromLS = () => (dispatch) => {
 };
 
 // Add event to localstorage
-export const addEventsToLS = events => {
+export const addEventsToLS = (events) => {
   localStorage.setItem("events", JSON.stringify(events));
 };

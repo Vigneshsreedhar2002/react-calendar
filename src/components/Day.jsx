@@ -1,19 +1,22 @@
 import React from "react";
-import { useSelector, useDispatch } from 'react-redux';
-import { setDayDetailObj, addEventDate, toggleDetailSidebarObj, toggleEventsSidebarObj, toggleNewEventSidebarObj } from "../actions/actionCreatorsObj";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setDayDetailObj,
+  addEventDate,
+  toggleDetailSidebarObj,
+  toggleEventsSidebarObj,
+  toggleNewEventSidebarObj,
+} from "../actions/actionCreatorsObj";
 
 const Day = ({ day: { visible, dayOfMonth, date } }) => {
-
-  const calendarContext = useSelector(state => state.calendarState);
+  const calendarContext = useSelector((state) => state.calendarState);
   const dispatch = useDispatch();
 
-  const {
-    events,
-  } = calendarContext;
+  const { events } = calendarContext;
 
   let todaysEvents = [];
 
-  events.forEach(event => {
+  events.forEach((event) => {
     if (date === event.date) {
       todaysEvents.push(event);
     }
@@ -30,11 +33,11 @@ const Day = ({ day: { visible, dayOfMonth, date } }) => {
     <button
       className={cn}
       onClick={() => {
-        dispatch(setDayDetailObj(dayOfMonth, todaysEvents))
+        dispatch(setDayDetailObj(dayOfMonth, todaysEvents));
         dispatch(toggleDetailSidebarObj(true));
         dispatch(toggleEventsSidebarObj(false));
         dispatch(toggleNewEventSidebarObj(false));
-        dispatch(addEventDate(dayOfMonth))
+        dispatch(addEventDate(dayOfMonth));
       }}
     >
       {dayOfMonth}
@@ -42,7 +45,6 @@ const Day = ({ day: { visible, dayOfMonth, date } }) => {
         {todaysEvents.map((el, index) => (
           <span key={index} el={el}>
             {" "}
-            <i className={`fas fa-star ${el.participants}`}></i>
           </span>
         ))}
       </div>
